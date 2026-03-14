@@ -177,12 +177,4 @@ push to main
 
 ---
 
-## Running Tests
 
-```bash
-cd backend
-./mvnw test              # unit tests only
-./mvnw verify            # unit + integration (requires Docker for Testcontainers)
-```
-
-Coverage report: `backend/target/site/jacoco/index.html`
