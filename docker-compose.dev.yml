@@ -1,0 +1,23 @@
+# Development override — hot-reload backend, skip frontend container
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  # Backend runs locally via mvnw spring-boot:run
+  # Frontend runs locally via npm run dev (with Vite proxy to :8080)
+  backend:
+    profiles: ["skip"]
+
+  frontend:
+    profiles: ["skip"]
+
+  prometheus:
+    profiles: ["monitoring"]
+
+  grafana:
+    profiles: ["monitoring"]

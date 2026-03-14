@@ -1,0 +1,9 @@
+#!/bin/sh
+# Maven Wrapper script for Unix
+MAVEN_WRAPPER_JAR="$0/../.mvn/wrapper/maven-wrapper.jar"
+MAVEN_OPTS="${MAVEN_OPTS:-}"
+
+exec java $MAVEN_OPTS \
+  -jar "$MAVEN_WRAPPER_JAR" \
+  --no-transfer-progress \
+  "$@"

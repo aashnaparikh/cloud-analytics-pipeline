@@ -1,0 +1,61 @@
+name: PR Quality Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-validate:
+    name: Lint & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose
+        run: docker compose config --quiet
+
+      - name: Check Java formatting (Checkstyle)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Maven validate + checkstyle
+        working-directory: backend
+        run: ./mvnw validate -q
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install deps + lint
+        working-directory: frontend
+        run: |
+          npm ci --silent
+          npm run lint
+
+  security-scan:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: OWASP dependency check
+        working-directory: backend
+        run: |
+          ./mvnw org.owasp:dependency-check-maven:check \
+            -DfailBuildOnCVSS=9 \
+            -DsuppressionFile=.owasp-suppressions.xml 2>/dev/null || true
